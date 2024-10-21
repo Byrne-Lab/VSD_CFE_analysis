@@ -594,7 +594,10 @@ fex = false(1,size(vsdprops.files,1));
 for f=1:size(vsdprops.files,1)
     fn = vsdprops.files(f,2);
     if contains(fn,';')
-        fstr = split(fn,'; ');
+        fstr = split(fn,';  ');
+		if contains(fstr{1},';')
+			fstr = split(fstr,'; ');
+		end
         fexist = false(size(fstr));
         for e=1:length(fstr)
             fexist(e) = exist(fstr{e},'file');
@@ -722,6 +725,9 @@ if ~strcmp(get(findobj(hObject.Parent,'Tag','rhsp'),'String'),'loaded')
         set(rhs_prog,'String',"loading...",'ForegroundColor','b');
         pause(0.1)
         rfn = split(rfn,'; ');
+		if contains(rfn{1},';')
+			rfn = split(rfn,'; ');
+		end
         for r=1:length(rfn)
             if r==1
                 [data, tm, stim, ~, notes, amplifier_channels, adc_channels , analog] = read_Intan_RHS2000_file(rfn{r});
@@ -1175,6 +1181,7 @@ end
 vsdprops.files(vsdprops.files(:,1)==string([hObject.Tag 's']),2) = filestr;
 guidata(hObject,vsdprops);
 set(findobj(hObject.Parent,'Tag',[hObject.Tag 's']),'String',filestr)  
+validate(findobj(hObject.Parent,'Tag',[hObject.Tag 's']))
 if isa(file,'cell')
     guessfiles(hObject,fullfile(path,file{1}))
 else
