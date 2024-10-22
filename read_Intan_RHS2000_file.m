@@ -1,5 +1,4 @@
-function [amplifier_data, t, stim_data,stim_parameters,notes,amplifier_channels, board_adc_channels, board_adc_data,frequency_parameters] = read_Intan_RHS2000_file(fname,filter)
-
+function [amplifier_data, t, stim_data,stim_parameters,notes,amplifier_channels, board_adc_channels, board_adc_data,frequency_parameters,board_dig_in_channels,board_dig_in_data] = read_Intan_RHS2000_file(fname,filter)
 % read_Intan_RHS2000_file
 %
 % Version 1.0, 30 January 2017

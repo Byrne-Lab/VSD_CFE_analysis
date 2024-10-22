@@ -730,13 +730,14 @@ if ~strcmp(get(findobj(hObject.Parent,'Tag','rhsp'),'String'),'loaded')
 		end
         for r=1:length(rfn)
             if r==1
-                [data, tm, stim, ~, notes, amplifier_channels, adc_channels , analog] = read_Intan_RHS2000_file(rfn{r});
+                [data, tm, stim, ~, notes, amplifier_channels, adc_channels , analog,~, dig_in_channels, digital] = read_Intan_RHS2000_file(rfn{r});
             else
-                [datap, tmp, stimp, ~,  ~, amplifier_channels, adc_channels , analogp] = read_Intan_RHS2000_file(rfn{r});
+                [datap, tmp, stimp, ~,  ~, amplifier_channels, adc_channels , analogp,~, dig_in_channels, digitalp] = read_Intan_RHS2000_file(rfn{r});
                 data = [data, datap];
                 tm = [tm, tmp];
                 stim = [stim, stimp];
                 analog = [analog, analogp];
+				digital = [digital,digitalp];
             end
         end
         vsdprops.intan.tm = tm;
@@ -749,7 +750,7 @@ if ~strcmp(get(findobj(hObject.Parent,'Tag','rhsp'),'String'),'loaded')
             stim = zeros(0,length(tm));
         end
 
-        vsdprops.intan.data = [data;stim;analog];
+        vsdprops.intan.data = [data;stim;analog;digital];
 
         sz = size(vsdprops.intan.data);
         vsdprops.intan.min = min(vsdprops.intan.data,[],2);
@@ -758,7 +759,8 @@ if ~strcmp(get(findobj(hObject.Parent,'Tag','rhsp'),'String'),'loaded')
 
         vsdprops.intan.ch = [string({amplifier_channels.native_channel_name})';...
                             string({adc_channels.native_channel_name})';...
-                    join([string((1:size(data,1))'), repelem(" stim(uA)",size(data,1),1)])];
+                    join([string((1:size(data,1))'), repelem(" stim(uA)",size(data,1),1)]);...
+					string({dig_in_channels.native_channel_name})'];
         [path,file] = fileparts(rfn);
 
         vsdprops.intan.finfo.file = join(file,'; ');
@@ -932,11 +934,16 @@ if intch && vsdch % loaded both intan and vsd data (matlab file or raw)
                 for c=1:length(vsdprops.intan.ch)
                     nstr = replace(vsdprops.intan.ch(c),'A-','A');
                     idx = contains(vsdprops.note(:,1),nstr);
-                    if any(idx) && ~ismissing(vsdprops.note(idx,2))  
+					if any(idx) && ~ismissing(vsdprops.note(idx,2))  
                         nsp = replace(vsdprops.intan.ch(c),'-0','');
                         nsp = replace(nsp,'ALOG-IN','');
                         vsdprops.intan.ch(c) = join([nsp vsdprops.note(idx,2)],'-');
-                    end
+                    else
+						nsp = replace(vsdprops.intan.ch(c),'-0','');
+                		nsp = replace(nsp,'ALOG-IN','');
+						nsp = replace(nsp,'-IN','-');
+						vsdprops.intan.ch(c) = nsp;
+					end
                 end
             end
             props.ch = [vsdprops.intan.ch ; props.ch];
@@ -1022,15 +1029,21 @@ elseif vsdch % loaded only vsd data (raw)
     end
 else % loaded only intan data (raw)
     for x=1 % add data and BMP
+	assignin("base",'vsdprops',vsdprops)
     if isfield(vsdprops,'note')
         for c=1:length(vsdprops.intan.ch)
             nstr = replace(vsdprops.intan.ch(c),'A-','A');
             idx = contains(vsdprops.note(:,1),nstr);
-            if any(idx) && ~ismissing(vsdprops.note(idx,2))           
+			if any(idx) && ~ismissing(vsdprops.note(idx,2))           
                 nsp = replace(vsdprops.intan.ch(c),'-0','');
                 nsp = replace(nsp,'ALOG-IN','');
                 vsdprops.intan.ch(c) = join([nsp vsdprops.note(idx,2)],'-');
-            end
+			else
+				nsp = replace(vsdprops.intan.ch(c),'-0','');
+                nsp = replace(nsp,'ALOG-IN','');
+				nsp = replace(nsp,'-IN','-');
+				vsdprops.intan.ch(c) = nsp;
+			end
         end
     end
     intan = convert_uint(vsdprops.intan.data(:,1:dwnsp:end), vsdprops.intan.d2uint, vsdprops.intan.min,'double');
@@ -1042,7 +1055,7 @@ else % loaded only intan data (raw)
         idx = startsWith(props.ch,'V-');
         props.data = [intan; props.data(idx,:)];
         props.ch = [vsdprops.intan.ch; props.ch(idx)];
-    else
+	else
         props.data = intan;
         props.intan = vsdprops.intan.data;
         props.ch = vsdprops.intan.ch;
