@@ -724,7 +724,7 @@ if ~strcmp(get(findobj(hObject.Parent,'Tag','rhsp'),'String'),'loaded')
         rfn = vsdprops.files{vsdprops.files(:,1)=="rhsfns",2};
         set(rhs_prog,'String',"loading...",'ForegroundColor','b');
         pause(0.1)
-        rfn = split(rfn,'; ');
+        rfn = split(rfn,';  ');
 		if contains(rfn{1},';')
 			rfn = split(rfn,'; ');
 		end
@@ -1163,7 +1163,10 @@ end
 fstr = get(findobj(hObject.Parent,'Tag',hstr),'String');
 fph = findobj(hObject.Parent,'Tag',replace(hstr,'fns','p'));
 
-fstr = split(fstr,'; ');
+fstr = split(fstr,';  ');
+if contains(fstr{1},';')
+	fstr = split(fstr,'; ');
+end
 fexist = false(size(fstr));
 for f=1:length(fstr)
     fexist(f) = exist(fstr{f},'file');
