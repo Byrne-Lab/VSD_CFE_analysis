@@ -15,27 +15,30 @@ if ischar(inputinfo)
 
     vsd = files(contains(files(:,2),'tsm'),2);
     [folder, filenm, ext] = fileparts(vsd);
-    fvsd = [filenm{1},ext{1}];
-
-    hasvsd = true;
-    if exist(fullfile(inputdata.curdir,fvsd),'file')
-        nvsd = fullfile(inputdata.curdir,fvsd);
-    else
-        if exist(vsd,'file')
-            nvsd = vsd;
-        else
-            answer = questdlg('Could not find file?  Would you like to search another folder?', 'Oops!','Yes','No','Cancel','Yes');
-            if strcmp(answer,'Yes')
-                [file, path, ~] = uigetfile('C:\Users\cneveu\Desktop\Data\*.tsm','Select file','MultiSelect','off');
-                nvsd = fullfile(path,file);
-            elseif strcmp(answer,'No')
-                hasvsd = false;
-            else
-                warning(['Could not find ' char(vsd)])
-                hasvsd = false;
-            end
-        end
-    end
+	if ~isempty(filenm)
+    	fvsd = [filenm{1},ext{1}];
+		hasvsd = true;
+		if exist(fullfile(inputdata.curdir,fvsd),'file')
+        	nvsd = fullfile(inputdata.curdir,fvsd);
+    	else
+        	if exist(vsd,'file')
+            	nvsd = vsd;
+        	else
+            	answer = questdlg('Could not find vsd file?  Would you like to search another folder?', 'Oops!','Yes','No','Cancel','Yes');
+            	if strcmp(answer,'Yes')
+                	[file, path, ~] = uigetfile('C:\Users\cneveu\Desktop\Data\*.tsm','Select file','MultiSelect','off');
+                	nvsd = fullfile(path,file);
+            	elseif strcmp(answer,'No')
+                	hasvsd = false;
+            	else
+                	warning(['Could not find ' char(vsd)])
+                	hasvsd = false;
+            	end
+        	end
+		end
+	else
+		hasvsd = false;
+	end
 
     origim = inputdata.im;
     if hasvsd
