@@ -1911,6 +1911,7 @@ function remove_artifact_fun(hObject,eventdata)
 props = guidata(hObject);
 intan = findobj('Tag',props.intan_tag);
 fig = hObject.Parent;
+tidx = get(findobj(fig,'Tag','trig_channels'),'Value');
 idx = get(findobj(fig,'Tag','rmv_channels'),'Value');
 mck = get(findobj(fig,'Tag','rmv_mean'),'Value');
 pre = str2double(get(findobj(fig,'Tag','prezero'),'String'));
@@ -1920,54 +1921,75 @@ post = round(post/diff(props.tm(1:2))/1000);
 close(fig)
 
 [~,y] = ginput(1);
-if y>mean(props.data(idx,:))
-    yidx = find(props.data(idx,:)>y);
+if y>mean(props.data(tidx,:))
+    yidx = find(props.data(tidx,:)>y);
 else
-    yidx = find(props.data(idx,:)<y);
+    yidx = find(props.data(tidx,:)<y);
 end
 ra = 20;
 yidx = yidx([true diff(yidx)>ra]);
-deltax = floor(mean(diff(yidx)));
+dyidx = diff(yidx);
+dyidx(dyidx>1.01*dyidx(1)) = [];
+deltax = floor(mean(dyidx));
+
+set(findobj('Tag','yaxis_label'),'Visible','on')
+allbut = findobj('Type','Uicontrol','Enable','on');
+set(allbut,'Enable','off')
+buf = uicontrol(props.axpanel,'Units','pixels',...
+    'Position',[props.axpanel.Position(3)/2, props.axpanel.Position(4)-60,200, 40],...
+    'Style','text','String','Plotting...','FontSize',15);
+pause(0.1)
 
 props.bmin = min(props.data,[],2);
 props.bd2uint = repelem(2^16,size(props.data,1),1)./range(props.data,2);
 props.databackup = convert_uint(props.data, props.bd2uint, props.bmin, 'uint16'); 
 props.log = [props.log; 'updated backup of data'];
 
-if mck
-    prew = 5;
-    trim = 20;
-    avg = zeros(1,deltax - trim);
-    yidx(yidx<=prew) = [];
-    yidx(yidx>length(props.data)-length(avg)-1) = [];
-    
-    for x=1:length(yidx)
-        avg = avg + props.data(idx,yidx(x) - prew:yidx(x) + length(avg) - prew - 1);
-    end
-    avg = avg/length(yidx);
-
-    tic
-    for x=1:length(yidx)
-        widx = yidx(x) - prew:yidx(x) + length(avg) - prew - 1;
-        ridx = find(abs(props.data(idx,widx))>abs(y),1,'last');
-        props.data(idx,widx) = props.data(idx,widx) - avg;
-        ridx(ridx>length(widx)-5) = [];
-        props.data(idx,widx(1:ridx + 5)) = 0;
-    end
-    toc
-    props.log = [props.log; ['Removed artifact by mean trace from channel ' num2str(idx) ' (' props.ch{idx} ').']];
-else
-    meand = mean(props.data(idx,:));
-    dur = size(props.data,2);
-    nidx = yidx(1):mode(diff(yidx)):dur;
-    for i=1:length(nidx)
-        widx = nidx(i)-pre:nidx(i)+post;
-        if max(widx)<=dur && min(widx)>1
-            props.data(idx,widx) = meand;
-        end
-    end
-    props.log = [props.log; ['Removed artifact by mean scalar from channel ' num2str(idx) ' (' props.ch{idx} ').']];
+for i=1:length(idx)
+	if mck
+    	prew = 5;
+		postz = 20;
+    	trim = 20;
+    	avg = zeros(1,deltax - trim);
+		tavg = zeros(1,deltax - trim);
+    	yidx(yidx<=prew) = [];
+    	yidx(yidx>length(props.data)-length(avg)-1) = [];
+    	
+    	for x=1:length(yidx)
+        	avg = avg + props.data(idx(i),yidx(x) - prew:yidx(x) + length(avg) - prew - 1);
+			tavg = tavg + props.data(tidx,yidx(x) - prew:yidx(x) + length(tavg) - prew - 1);
+    	end
+    	avg = avg/length(yidx);
+		tavg = tavg/length(yidx);
+		pdur = sum(tavg>y);
+	
+    	tic
+    	for x=1:length(yidx)
+        	widx = yidx(x) - prew:yidx(x) + length(avg) - prew - 1;
+	%         ridx = find(abs(props.data(idx,widx))>abs(y),1,'last');
+        	props.data(idx(i),widx) = props.data(idx(i),widx) - avg;
+			props.data(idx(i),widx(1):widx(1)+prew+pdur+postz) = mean(props.data(idx(i),widx(1)-10:widx(1)));
+	%         ridx(ridx>length(widx)-5) = [];
+	%         props.data(idx,widx(1:ridx + 5)) = 0;
+    	end
+    	toc
+    	props.log = [props.log; ['Removed artifact by mean trace from channel ' num2str(idx(i)) ' (' props.ch{idx(i)} '). Using channel ' num2str(idx(i)) ' (' props.ch{idx(i)} ') as trigger.']];
+	else
+    	meand = mean(props.data(idx(i),:));
+    	dur = size(props.data,2);
+    	nidx = yidx(1):mode(diff(yidx)):dur;
+		for a=1:length(nidx)
+        	widx = nidx(a)-pre:nidx(a)+post;
+        	if max(widx)<=dur && min(widx)>1
+            	props.data(idx(i),widx) = meand;
+        	end
+		end
+		props.log = [props.log; ['Removed artifact by mean scalar from channel ' num2str(idx(i)) ' (' props.ch{idx(i)} '). Using channel ' num2str(idx(i)) ' (' props.ch{idx(i)} ') as trigger.']];
+	end
 end
+
+delete(buf)
+set(allbut(isvalid(allbut)),'Enable','on');
 
 guidata(intan,props)
 plotdata(intan)
@@ -1980,11 +2002,14 @@ str(:,4) = string(props.ch);
 str = join(str,'');
 mfpos = get(findobj('Tag',props.intan_tag),'Position');
 f2 = figure("Name",'Select channel','NumberTitle','off','MenuBar','none');
-f2.Position = [mfpos(1:2)+100 160 400];
+f2.Position = [mfpos(1:2)+100 160 330];
 
-uicontrol('Position',[30 565 100 20],'Style','text','String','Select channel');
-uicontrol('Position',[30 100 100 290],'Style','listbox','Max',length(props.ch),...
+uicontrol('Position',[30 285 100 20],'Style','text','String','Channels to clean');
+uicontrol('Position',[30 140 100 150],'Style','listbox','Max',length(props.ch),...
     'Min',1,'String',str','Tag','rmv_channels');
+uicontrol('Position',[30 115 100 20],'Style','text','String','Trigger channel');
+uicontrol('Position',[30 100 100 20],'Style','popupmenu','Max',1,...
+    'Min',1,'String',str','Tag','trig_channels');
 uicontrol('Position',[0 5 80 30],'Style','pushbutton','String','Remove','Callback',@remove_artifact_fun); 
 uicontrol('Position',[80 5 80 30],'Style','pushbutton','String','Cancel','Callback',@closefig); 
 
