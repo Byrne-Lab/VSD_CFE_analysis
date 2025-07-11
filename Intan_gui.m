@@ -12,7 +12,7 @@ end
 bcolor = [0.94 0.94 0.94];
 scolor = [0.7 0.7 0.7];
 hcolor = [1 1 1];
-tcolor = [0 0 0];
+tcolor = [0 0 0]; 
 if nargin==2
     switch style
         case 'dark'
