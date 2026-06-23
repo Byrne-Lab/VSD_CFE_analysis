@@ -245,7 +245,7 @@ str = join(str,'');
 
 uicontrol('Units','normalized','Position',[0.002 0.96 0.05 0.03],'Style','text','String','Select channel');
 uicontrol('Units','normalized','Position',[0.002 0.23 0.05 0.73],'Style','listbox',...
-    'Max',length(ch),'Min',1,'String',str','Tag','channels','Value',showidx(1),'Callback',@chchannel);
+    'Max',length(ch),'Min',1,'String',ch,'Tag','channels','Value',showidx(1),'Callback',@chchannel);
 %[5 440 100 20] [5 40 100 400]
 
 % initialize axes
@@ -278,7 +278,7 @@ ax2.XLim = [min(tm),max(tm)];
 
 uicontrol('Units','normalized','Position',[0.63 0.015 0.05 0.03],'Style','text','String','Add channel');
 uicontrol('Units','normalized','Position',[0.68 0.02 0.05 0.03],'Style','popupmenu',...
-    'Max',length(ch),'Min',1,'String',str','Tag','addchannels','Value',showidx(1),'Callback',@addchannel);
+    'Max',length(ch),'Min',1,'String',ch,'Tag','addchannels','Value',showidx(1),'Callback',@addchannel);
 
 
 W = -1000:1000;
@@ -312,7 +312,7 @@ nax.Title.String = 'Channel average';
 
 uicontrol('Units','normalized','Position',[0.08 0.2 0.05 0.03],'Style','text','String','Select channel');
 uicontrol('Units','normalized','Position',[0.13 0.2 0.05 0.03],'Style','popupmenu',...
-    'Max',length(ch),'Min',1,'String',str','Tag','avgchannels','Value',showidx(1),'Callback',@chchannel);
+    'Max',length(ch),'Min',1,'String',ch,'Tag','avgchannels','Value',showidx(1),'Callback',@chchannel);
 
 saxover = axes('Position',vax.Position);% so that the rectangle always exceed ylimits
 pos = [(W(1) + length(W)*slidepos/idur)*sf*1000,  -1,   length(W)/idur*sf*1000,  2];
