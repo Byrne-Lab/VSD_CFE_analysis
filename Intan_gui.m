@@ -2082,10 +2082,10 @@ f2.Position = [mfpos(1:2)+100 160 330];
 
 uicontrol('Position',[30 285 100 20],'Style','text','String','Channels to clean');
 uicontrol('Position',[30 140 100 150],'Style','listbox','Max',length(props.ch),...
-    'Min',1,'String',str','Tag','rmv_channels');
+    'Min',1,'String',props.ch,'Tag','rmv_channels');
 uicontrol('Position',[30 115 100 20],'Style','text','String','Trigger channel');
 uicontrol('Position',[30 100 100 20],'Style','popupmenu','Max',1,...
-    'Min',1,'String',str','Tag','trig_channels');
+    'Min',1,'String',props.ch,'Tag','trig_channels');
 uicontrol('Position',[0 5 80 30],'Style','pushbutton','String','Remove','Callback',@remove_artifact_fun); 
 uicontrol('Position',[80 5 80 30],'Style','pushbutton','String','Cancel','Callback',@closefig); 
 
@@ -2271,7 +2271,7 @@ filterp.fstop = [0.1,500];
 
 uicontrol('Position',[400 565 100 20],'Style','text','String','Select channel');
 uicontrol('Position',[400 40 100 530],'Style','listbox','Max',length(props.ch),...
-    'Min',1,'String',str','Tag','channels');
+    'Min',1,'String',props.ch,'Tag','channels');
 uicontrol('Position',[400 10 100 20],'Style','pushbutton','String','Apply Filter','Callback',@applyfilter); 
 
 uicontrol('Position',[20  575 60 20],'Style','text','String','Properties','HorizontalAlignment','left');
@@ -2937,7 +2937,7 @@ str = join(str,'');
 
 uicontrol('Units','normalized','Position',[0.002 0.96 0.07 0.03],'Style','text','String','Select channel');
 uicontrol('Units','normalized','Position',[0.002 0.23 0.07 0.73],'Style','listbox',...
-    'Max',1,'Min',1,'String',str','Tag','channels','Value',showidx(1),'Callback',@chchannel);
+    'Max',1,'Min',1,'String',ch,'Tag','channels','Value',showidx(1),'Callback',@chchannel);
 
 cpanel = uipanel('Title','Controls','Units','normalized','FontSize',12,'Position',[0.75 0 0.25 1],'Tag','cpanel');
 
@@ -2976,7 +2976,7 @@ uicontrol(cpanel,'Units','normalized','Position',[0.52 0.6 0.05 0.025],'Style','
 
 uicontrol(cpanel,'Units','normalized','Position',[0.60 0.9 0.3 0.05],'Style','text','String','Select channel');
 uicontrol(cpanel,'Units','normalized','Position',[0.60 0.1 0.3 0.8],'Style','listbox','Max',length(ch),...
-    'Min',1,'String',str','Tag','chapply');
+    'Min',1,'String',ch,'Tag','chapply');
 uicontrol(cpanel,'Units','normalized','Position',[0.60 0.05 0.3 0.05],'Style','pushbutton','String','Apply','Callback',@applyrm); 
 
 
@@ -4131,7 +4131,7 @@ for a=1:length(ax)
     ax(a).XTick = [];
 
     uicontrol('Units','normalized','Position',[0.63 topax-axheight*(a-1) 0.05 0.05],'Style','popupmenu',...
-        'Max',length(ch),'Min',1,'String',str','Tag',['channels' num2str(a)],'Value',props.video.ch(a),'Callback',@chimch);
+        'Max',length(ch),'Min',1,'String',ch,'Tag',['channels' num2str(a)],'Value',props.video.ch(a),'Callback',@chimch);
 end
 ax(5) = axes('Units','normalized','Position',[ax(end).Position(1) 0.05 ax(end).Position(3) 0.605]);
 props.video.kimg = imagesc(props.video.tm, 1:size(props.video.kerndata,2), props.video.kerndata'*imult(inv+1));
