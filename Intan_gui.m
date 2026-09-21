@@ -2447,8 +2447,8 @@ props.log = [props.log; 'updated backup of data'];
 for d=idx
     disp(num2str(d))
     props.data(d,:) = filter(Hd,props.data(d,:));
-    idx = find(props.tm>0.4,1);
-    props.data(d,1:idx) = 0.4;
+    idxs = find(props.tm>0.4,1);
+    props.data(d,1:idxs) = mean(props.data(d,idxs:idxs+20));
 end
 
 if ~isfield(props,'filter')
@@ -2486,8 +2486,8 @@ plt1.YData = props.data(val,:);
 
 plt2 = findobj(hObject.Parent,'Tag','fdata_filt');
 fdata = filter(Hd,props.data(val,:));
-idx = find(props.tm>0,1);
-fdata(1:idx) = 0;
+idx = find(props.tm>0.4,1);
+fdata(1:idx) = mean(fdata(idx:idx+20));
 plt2.YData = fdata;
 
 set(allbut,'Enable','on')
