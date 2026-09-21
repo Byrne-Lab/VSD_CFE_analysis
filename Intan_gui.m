@@ -1297,7 +1297,7 @@ for s=1:size(strs,2)
         if exist(noten,"file")
             notes = readcell(fullfile(fpath,'notes.xlsx'));
             cfename = notes{ismember(string(notes(:,1)),fn),2};
-            if ~isempty(cfename)
+            if ~isempty(cfename) 
                 rfn = split(cfename,'; ');
                 for r=1:length(rfn)
                     if any(contains(fnames,rfn{r}))
@@ -1314,9 +1314,9 @@ for s=1:size(strs,2)
                        end
                     end
                 end
+                cfename = join(rfn,'; ');
+                cfexist = true;
             end
-            cfename = join(rfn,'; ');
-            cfexist = true;
         end
         if cfexist
             set(findobj(hObject.Parent,'Tag',strs{1,s}),'String',cfename)
@@ -1928,7 +1928,7 @@ str = repmat(["<HTML><FONT color=""", "black", """>", "", "</FONT></HTML>"],leng
 str(props.hideidx,2) = "gray";
 str(:,4) = string(props.ch);
 str = join(str,'');
-[idx,tf] = listdlg('liststring',str,'OKString','Restore');
+[idx,tf] = listdlg('liststring',props.ch,'OKString','Restore');
 vst = find(contains(props.ch,'V-'),1,'first');
 if tf
 
@@ -2447,8 +2447,8 @@ props.log = [props.log; 'updated backup of data'];
 for d=idx
     disp(num2str(d))
     props.data(d,:) = filter(Hd,props.data(d,:));
-    idx = find(props.tm>1,1);
-    props.data(d,1:idx) = 0;
+    idx = find(props.tm>0.4,1);
+    props.data(d,1:idx) = 0.4;
 end
 
 if ~isfield(props,'filter')
@@ -2486,7 +2486,7 @@ plt1.YData = props.data(val,:);
 
 plt2 = findobj(hObject.Parent,'Tag','fdata_filt');
 fdata = filter(Hd,props.data(val,:));
-idx = find(props.tm>1,1);
+idx = find(props.tm>0,1);
 fdata(1:idx) = 0;
 plt2.YData = fdata;
 
@@ -3078,7 +3078,7 @@ if length(x)>1
     yy = spline(x,y,1:length(props.tm));
     set(props.blapp.fplt,'YData',yy)
     sdata = props.data(idx,:) - yy;
-    sdata(props.tm<1) = sdata(find(props.tm>=1,1)); 
+    sdata(props.tm<0.4) = mean(sdata(find(props.tm>=0.4,20))); 
     set(props.blapp.splt,'YData',sdata)
 end
 guidata(intan_fig,props)
@@ -3171,7 +3171,7 @@ toc
 disp(num2str(256^2*toc/60))
 set(props.blapp.fplt,'YData',props.blapp.fun(fparam,props.tm))
 sdata = props.data(idx,:) - props.blapp.fun(fparam,props.tm);
-sdata(props.tm<1) = sdata(find(props.tm>=1,1)); 
+sdata(props.tm<0.4) = mean(sdata(find(props.tm>=0.4,20))); 
 set(props.blapp.splt,'YData',sdata)
 set(props.blapp.ax,'YLim',[min(props.data(idx,:)) max(sdata)])
 disp('plotted')
@@ -3219,7 +3219,7 @@ if get(findobj(hObject.Parent,'Tag','Fit_'),'Value')
         fparam = lsqcurvefit(fun, p0, tm(1:ds:end), data(1:ds:end), -flimits, flimits, opts);
         props.blapp.applyparam(i,:) = fparam;
         sdata = props.data(idx(i),:) - fun(fparam,props.tm);
-        sdata(props.tm<1) = sdata(find(props.tm>=1,1)); 
+        sdata(props.tm<0.4) = mean(sdata(find(props.tm>=0.4,20))); 
         props.data(idx(i),:) = sdata;
     end
     
@@ -3241,7 +3241,7 @@ elseif get(findobj(hObject.Parent,'Tag','Spline_reg_'),'Value')
         y = props.data(idx(i),x);
         yy = spline(x,y,1:length(props.tm));
         sdata = props.data(idx(i),:) - yy;
-        sdata(props.tm<1) = sdata(find(props.tm>=1,1)); 
+        sdata(props.tm<0.4) = mean(sdata(find(props.tm>=0.4,20))); 
         props.data(idx(i),:) = sdata;
     end
     props.log = [props.log; 'Removed baseline using Spline with ' num2str(npoints),...

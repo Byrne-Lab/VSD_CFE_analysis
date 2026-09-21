@@ -700,7 +700,7 @@ allbut = findobj(hObject,'Type','Uicontrol','Enable','on');
 allbut = [allbut; findobj(props.panel,'Type','Uicontrol','Enable','on')];
 set(allbut,'Enable','off')
 
-[indx,tf] = listdlg('PromptString',{'Choose channel','Press apply to overwrite', 'selected channels with the ', 'parameters of the current',  'channel'},'ListString',props.str);
+[indx,tf] = listdlg('PromptString',{'Choose channel','Press apply to overwrite', 'selected channels with the ', 'parameters of the current',  'channel'},'ListString',props.ch);
 
 idx = get(findobj('Tag','channels','Parent',props.panel.Parent),'Value');
 if tf
