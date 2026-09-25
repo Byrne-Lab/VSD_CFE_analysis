@@ -1968,7 +1968,7 @@ str = repmat(["<HTML><FONT color=""", "black", """>", "", "</FONT></HTML>"],leng
 str(props.hideidx,2) = "gray";
 str(:,4) = string(props.ch);
 str = join(str,'');
-[idx,tf] = listdlg('liststring',str);
+[idx,tf] = listdlg('liststring',props.ch);
 if tf
     [x,~] = ginput(2);
     tidx = find(props.tm>min(x),1):find(props.tm<max(x),1,'last');
@@ -2038,7 +2038,7 @@ for i=1:length(idx)
     	avg = avg/length(yidx);
 		tavg = tavg/length(yidx);
 		pdur = sum(tavg>y);
-	
+	    
     	tic
     	for x=1:length(yidx)
         	widx = yidx(x) - prew:yidx(x) + length(avg) - prew - 1;
@@ -2053,7 +2053,8 @@ for i=1:length(idx)
 	else
     	meand = mean(props.data(idx(i),:));
     	dur = size(props.data,2);
-    	nidx = yidx(1):mode(diff(yidx)):dur;
+    	% nidx = yidx(1):mode(diff(yidx)):dur;
+        nidx = yidx;
 		for a=1:length(nidx)
         	widx = nidx(a)-pre:nidx(a)+post;
         	if max(widx)<=dur && min(widx)>1
