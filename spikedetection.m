@@ -1328,7 +1328,7 @@ aspike = [];
 aspike2 = [];
 if ~isempty(spikes)
     spikes = spikes([true, diff(spikes)>ra]);% remove values that are separated by < re-arm (prevents dection of same spike).  The value is idices;
-    spikes(spikes+W(1)<0 | spikes+W(end)>length(data)) = [];
+    spikes(spikes+W(1)<=0 | spikes+W(end)>length(data)) = [];
     aspike = zeros(length(spikes),length(W));
     aspike2 = zeros(length(spikes),length(W));% for averaging of channel2
     for i = 1:length(spikes)
