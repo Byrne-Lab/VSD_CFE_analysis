@@ -18,7 +18,7 @@ end
 chunkLength = 485;
 shutterThr = 2; % Threshold for detection of initial shutter opening. (In times the mean dark frame intensity.)
 baselineFrames = 10; % Number of frames to average to get the baseline light intesity.
-shutterOpenDur = 400; % Number of frames during the duration it takes to open the shutter.
+shutterOpenDur = 0; % Number of frames during the duration it takes to open the shutter.
 
 darkFrameMode = 'builtin'; % 'builtin' uses the built-in dark frame at the end of .tsm files.
                             % 'firstframes' averages the first n frames to obtain the dark frame. 
