@@ -3081,6 +3081,7 @@ if length(x)>1
     sdata = props.data(idx,:) - yy;
     sdata(props.tm<0.4) = mean(sdata(find(props.tm>=0.4,20))); 
     set(props.blapp.splt,'YData',sdata)
+    set(props.blapp.ax,'YLim',[min([props.data(idx,:) sdata]) max([props.data(idx,:) sdata])]);
 end
 guidata(intan_fig,props)
 
@@ -3174,7 +3175,7 @@ set(props.blapp.fplt,'YData',props.blapp.fun(fparam,props.tm))
 sdata = props.data(idx,:) - props.blapp.fun(fparam,props.tm);
 sdata(props.tm<0.4) = mean(sdata(find(props.tm>=0.4,20))); 
 set(props.blapp.splt,'YData',sdata)
-set(props.blapp.ax,'YLim',[min(props.data(idx,:)) max(sdata)])
+set(props.blapp.ax,'YLim',[min([props.data(idx,:) sdata]) max([props.data(idx,:) sdata])]);
 disp('plotted')
 guidata(findobj('Tag',intan_tag),props)
 delete(buf)
