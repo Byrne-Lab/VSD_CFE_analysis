@@ -2448,7 +2448,7 @@ props.log = [props.log; 'updated backup of data'];
 for d=idx
     disp(num2str(d))
     props.data(d,:) = filter(Hd,props.data(d,:));
-    idxs = find(props.tm>0.4,1);
+    idxs = find(props.tm>0,1);
     props.data(d,1:idxs) = mean(props.data(d,idxs:idxs+20));
 end
 
@@ -3079,7 +3079,7 @@ if length(x)>1
     yy = spline(x,y,1:length(props.tm));
     set(props.blapp.fplt,'YData',yy)
     sdata = props.data(idx,:) - yy;
-    sdata(props.tm<0.4) = mean(sdata(find(props.tm>=0.4,20))); 
+    sdata(props.tm<0.05) = mean(sdata(find(props.tm>=0.05,20))); 
     set(props.blapp.splt,'YData',sdata)
     set(props.blapp.ax,'YLim',[min([props.data(idx,:) sdata]) max([props.data(idx,:) sdata])]);
 end
@@ -3221,7 +3221,7 @@ if get(findobj(hObject.Parent,'Tag','Fit_'),'Value')
         fparam = lsqcurvefit(fun, p0, tm(1:ds:end), data(1:ds:end), -flimits, flimits, opts);
         props.blapp.applyparam(i,:) = fparam;
         sdata = props.data(idx(i),:) - fun(fparam,props.tm);
-        sdata(props.tm<0.4) = mean(sdata(find(props.tm>=0.4,20))); 
+        sdata(props.tm<0.05) = mean(sdata(find(props.tm>=0.05,20))); 
         props.data(idx(i),:) = sdata;
     end
     
