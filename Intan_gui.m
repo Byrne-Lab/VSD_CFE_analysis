@@ -2137,7 +2137,7 @@ pause(0.01)
 props = guidata(hObject);
 if contains(hObject.String,'x')
     ylims = {props.ax.YLim}';
-    set(props.ax,'XLim',[0 max(props.ax(1).Children(1).XData)])
+    set(props.ax,'XLim',[min(props.ax(1).Children(1).XData) max(props.ax(1).Children(1).XData)])
     for a=1:length(props.ax)
         props.ax(a).YLim = ylims{a};
     end
@@ -3243,7 +3243,7 @@ elseif get(findobj(hObject.Parent,'Tag','Spline_reg_'),'Value')
         y = props.data(idx(i),x);
         yy = spline(x,y,1:length(props.tm));
         sdata = props.data(idx(i),:) - yy;
-        sdata(props.tm<0.4) = mean(sdata(find(props.tm>=0.4,20))); 
+        sdata(props.tm<0.05) = mean(sdata(find(props.tm>=0.05,20))); 
         props.data(idx(i),:) = sdata;
     end
     props.log = [props.log; 'Removed baseline using Spline with ' num2str(npoints),...
